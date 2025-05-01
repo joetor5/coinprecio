@@ -10,11 +10,17 @@ from .exceptions import *
 # defaults
 _COIN_API_BACKEND = "coinmarketcap"
 _COIN_API_CURRENCY = "USD"
+_COIN_API_SYMBOL = "BTC"
+_COIN_API_LIMIT = 100
 
 class _CoinApi(ABC):
 
     @abstractmethod
     def get_price(self):
+        pass
+
+    @abstractmethod
+    def get_price_list(self):
         pass
 
     def fetch(self, api_url, api_headers, api_parameters):
@@ -32,36 +38,70 @@ class _CoinApi(ABC):
 
 
 class _CoinMarketCapApi(_CoinApi):
-    def __init__(self, api_key: str, currency: str = "USD"):
+    def __init__(self, api_key: str, currency: str = _COIN_API_CURRENCY):
         self.api_key = api_key
         self.currency = currency
-        self.api_endpoint = "/v1/cryptocurrency/listings/latest"
-        self.api_url = "https://pro-api.coinmarketcap.com" + self.api_endpoint
-        self.api_header = "X-CMC_PRO_API_KEY"
+        self.api_domain = "https://pro-api.coinmarketcap.com"
+        self.api_url_listings = self.api_domain + "/v1/cryptocurrency/listings/latest"
+        self.api_url_quotes = self.api_domain + "/v2/cryptocurrency/quotes/latest"
         self.api_headers = {
             "Accepts": "application/json",
-            self.api_header: api_key,
+            "X-CMC_PRO_API_KEY": api_key,
         }
 
-        self.api_parameters = {
-            "start": "1",
-            "limit": "1",
+        self.api_parameters_listings = {
+            "limit": _COIN_API_LIMIT,
             "convert": self.currency
         }
 
+        self.api_parameters_quotes = {
+            "symbol": _COIN_API_SYMBOL,
+            "convert": self.currency
+        }
 
-    def get_price(self, coin: str = None):
-        response = self.fetch(self.api_url,
-                              self.api_headers,
-                              self.api_parameters)
+    def get_price(self, symbol: str = _COIN_API_SYMBOL):
+        response = self.fetch(self.api_url_quotes,
+                        self.api_headers,
+                        self.api_parameters_quotes).json()
 
-        data = response.json()
+
+        data = response["data"]
+        timestamp = response["status"]["timestamp"]
+
         try:
-            coin_price = data["data"][0]["quote"][self.currency]["price"]
-        except KeyError:
-            raise CoinApiParseError("Unable to parse price data from") from None
+            price = data[symbol][0]["quote"][self.currency]["price"]
+        except KeyError as e:
+            raise CoinApiParseError(f"Unable to parse price data: {e}") from None
 
-        return round(coin_price, 2)
+        return {
+            "timestamp": timestamp,
+            symbol: price
+        }
+
+    def get_price_list(self, limit: int = None):
+        price_list = {}
+        if limit:
+            self.api_parameters_listings["limit"] = limit
+
+        response = self.fetch(self.api_url_listings,
+                              self.api_headers,
+                              self.api_parameters_listings).json()
+
+        data = response["data"]
+        timestamp = response["status"]["timestamp"]
+
+        for coin in data:
+            try:
+                symbol = coin["symbol"]
+                price = coin["quote"][self.currency]["price"]
+                price_list[symbol] = price
+            except KeyError as e:
+                raise CoinApiParseError(f"Unable to parse price data: {e}") from None
+
+        return {
+            "timestamp": timestamp,
+            "coins": price_list
+        }
 
 
 class CoinApiFactory:
