@@ -2,21 +2,19 @@
 # Distributed under the MIT License. See the accompanying file LICENSE.
 
 from setuptools import setup
-import coinprecio
 
 with open("README.md") as f:
     doc = f.read()
 
 setup(
     name="coinprecio",
-    version=coinprecio.__version__,
     description="Crypto API client for fetching market price data via multiple backends.",
     long_description=doc,
     long_description_content_type="text/markdown",
-    author=coinprecio.__author__,
-    author_email=coinprecio.__author_email__,
+    author="Joel Torres",
+    author_email="jt@joeltorres.org",
     url="https://github.com/joetor5/coinprecio",
-    license=coinprecio.__license__,
+    license="MIT",
     platforms="any",
     install_requires=[
         "requests==2.32.3"
