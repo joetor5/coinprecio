@@ -6,11 +6,11 @@ import requests
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 from .exceptions import *
 
-# defaults
 _COIN_API_BACKEND = "coinmarketcap"
 _COIN_API_CURRENCY = "USD"
 _COIN_API_SYMBOL = "BTC"
 _COIN_API_LIMIT = 100
+
 
 class _CoinApi(ABC):
 
@@ -21,19 +21,6 @@ class _CoinApi(ABC):
     @abstractmethod
     def get_price_list(self):
         pass
-
-    def fetch(self, api_url, api_headers, api_parameters):
-        try:
-            response = requests.get(api_url,
-                                    headers=api_headers,
-                                    params=api_parameters)
-        except (ConnectionError, Timeout, TooManyRedirects) as e:
-            raise CoinApiFetchError("Unable to connect to API URL") from None
-
-        if response.status_code == 200:
-            return response
-        else:
-            raise CoinApiFetchError("HTTP response was not 200 OK, got status: {}".format(response.status_code))
 
 
 class _CoinMarketCapApi(_CoinApi):
@@ -59,9 +46,9 @@ class _CoinMarketCapApi(_CoinApi):
         }
 
     def get_price(self, symbol: str = _COIN_API_SYMBOL):
-        response = self.fetch(self.api_url_quotes,
-                        self.api_headers,
-                        self.api_parameters_quotes).json()
+        response = _fetch(self.api_url_quotes,
+                          self.api_headers,
+                          self.api_parameters_quotes).json()
 
 
         data = response["data"]
@@ -82,9 +69,9 @@ class _CoinMarketCapApi(_CoinApi):
         if limit:
             self.api_parameters_listings["limit"] = limit
 
-        response = self.fetch(self.api_url_listings,
-                              self.api_headers,
-                              self.api_parameters_listings).json()
+        response = _fetch(self.api_url_listings,
+                          self.api_headers,
+                          self.api_parameters_listings).json()
 
         data = response["data"]
         timestamp = response["status"]["timestamp"]
@@ -103,11 +90,22 @@ class _CoinMarketCapApi(_CoinApi):
         }
 
 
-class CoinApiFactory:
-    @staticmethod
-    def create(api_key: str, backend: str = _COIN_API_BACKEND, currency: str = _COIN_API_CURRENCY):
-        if backend == "coinmarketcap":
-            return _CoinMarketCapApi(api_key, currency)
-        else:
-            raise CoinApiFactoryError("Unsupported API backend:", backend)
+def _fetch(api_url, api_headers, api_parameters):
+    try:
+        response = requests.get(api_url,
+                                headers=api_headers,
+                                params=api_parameters)
+    except (ConnectionError, Timeout, TooManyRedirects) as e:
+        raise CoinApiFetchError("Unable to connect to API URL") from None
 
+    if response.status_code == 200:
+        return response
+    else:
+        raise CoinApiFetchError("HTTP response was not 200 OK, got status: {}".format(response.status_code))
+
+
+def api(api_key: str, backend: str = _COIN_API_BACKEND, currency: str = _COIN_API_CURRENCY) -> _CoinApi:
+    if backend == "coinmarketcap":
+        return _CoinMarketCapApi(api_key, currency)
+    else:
+        raise CoinApiFactoryError(f"Unsupported API backend: {backend}")
