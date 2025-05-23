@@ -96,12 +96,12 @@ def _fetch(api_url, api_headers, api_parameters):
                                 headers=api_headers,
                                 params=api_parameters)
     except (ConnectionError, Timeout, TooManyRedirects) as e:
-        raise CoinApiFetchError("Unable to connect to API URL") from None
+        raise CoinApiFetchError(f"Unable to connect to API URL: {api_url}") from None
 
     if response.status_code == 200:
         return response
     else:
-        raise CoinApiFetchError("HTTP response was not 200 OK, got status: {}".format(response.status_code))
+        raise CoinApiFetchError(f"HTTP response was not 200 OK, got status: {response.status_code}")
 
 
 def api(api_key: str, backend: str = _COIN_API_BACKEND, currency: str = _COIN_API_CURRENCY) -> _CoinApi:
