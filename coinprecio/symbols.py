@@ -2,5 +2,8 @@
 # Distributed under the MIT License. See the accompanying file LICENSE.
 
 symbols = [
-    "BTC"
+    "BTC",
+    "ETH",
+    "BCH",
+    "LTC"
 ]

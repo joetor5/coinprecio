@@ -42,10 +42,17 @@ price = coinapi.get_price()
 ## <div id="supported-symbols">Supported Symbols</div>
 
 * BTC
+* ETH
+* BCH
+* LTC
 
 ## <div id="supported-currencies">Supported Currencies</div>
 
 * USD
+* EUR
+* CAD
+* MXN
+* PHP
 
 ## <div id="license">License</div>
 
