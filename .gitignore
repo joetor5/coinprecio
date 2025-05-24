@@ -1,2 +1,4 @@
 .venv
 sample.json
+*egg*
+dist
