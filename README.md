@@ -1,6 +1,6 @@
 # coinprecio
 
-Crypto API client for fetching market price.
+Cryptocurrency API client for fetching market price.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ Python >= 3.8
 ## <div id="install">Install</div>
 
 ```
-TBA
+pip install coinprecio
 ```
 
 ## <div id="usage">Usage</div>
@@ -34,6 +34,8 @@ api_key = "1234567890"
 coinapi = api(api_key)
 price = coinapi.get_price()
 ```
+
+Note: *api_key* should be associated with the respective backend/API service.
 
 ## <div id="supported-api-backends">Supported API Backends</div>
 

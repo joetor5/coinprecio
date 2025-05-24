@@ -8,7 +8,7 @@ with open("README.md") as f:
 
 setup(
     name="coinprecio",
-    description="Crypto API client for fetching market price data via multiple backends.",
+    description="Cryptocurrency API client for fetching market price",
     long_description=doc,
     long_description_content_type="text/markdown",
     author="Joel Torres",

@@ -7,9 +7,6 @@ class CoinApiError(Exception):
 class CoinApiFetchError(CoinApiError):
     pass
 
-class CoinApiParseError(CoinApiError):
-    pass
-
 class CoinApiFactoryError(CoinApiError):
     pass
 
