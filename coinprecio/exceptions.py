@@ -1,11 +1,17 @@
 # Copyright (c) 2025 Joel Torres
 # Distributed under the MIT License. See the accompanying file LICENSE.
 
-class CoinApiFetchError(Exception):
+class CoinApiError(Exception):
     pass
 
-class CoinApiParseError(Exception):
+class CoinApiFetchError(CoinApiError):
     pass
 
-class CoinApiFactoryError(Exception):
+class CoinApiParseError(CoinApiError):
+    pass
+
+class CoinApiFactoryError(CoinApiError):
+    pass
+
+class CoinApiDataError(CoinApiError):
     pass
