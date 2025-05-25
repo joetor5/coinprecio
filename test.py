@@ -6,6 +6,8 @@ import os
 from coinprecio import api
 from coinprecio.coinapi import _CoinApi, _CoinApiData
 from coinprecio.exceptions import *
+from coinprecio.symbols import symbols
+
 
 class TestCoinApi(unittest.TestCase):
     def setUp(self):
@@ -40,9 +42,23 @@ class TestCoinApi(unittest.TestCase):
         price = self.coin_api.get_price()
         self.assertIsInstance(price, float)
         self.assertGreater(price, 0)
+
+    def test_get_price_all(self):
+        prices = self.coin_api.get_price_all()
+        self.assertIsInstance(prices, dict)
+
+        symbols_in_list = {symbol in symbols for symbol in prices.keys()}
+        self.assertEqual(symbols_in_list, {True})
+
+        prices_are_float = {isinstance(price, float) for price in prices.values()}
+        self.assertEqual(prices_are_float, {True})
+
+        prices_greater_than_zero = {price > 0 for price in prices.values()}
+        self.assertEqual(prices_greater_than_zero, {True})
     
     def tearDown(self):
         pass
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -20,6 +20,10 @@ class _CoinApi(ABC):
     def get_price(self):
         pass
 
+    @abstractmethod
+    def get_price_all(self):
+        pass
+
 
 @dataclass
 class _CoinApiData:
@@ -50,13 +54,21 @@ class _CoinMarketCapApi(_CoinApi, _CoinApiData):
             "X-CMC_PRO_API_KEY": self.api_key,
         }
 
+        self.api_urls = [f"{self.domain}/v2/cryptocurrency/quotes/latest"]
         self.api_endpoints = {
             "get_price": {
-                    "url": f"{self.domain}/v2/cryptocurrency/quotes/latest",
+                    "url": self.api_urls[0],
                     "params": {
                         "symbol": self.symbol,
                         "convert": self.currency
                     }
+            },
+            "get_price_all": {
+                    "url": self.api_urls[0],
+                    "params": {
+                        "symbol": ",".join(symbols),
+                        "convert": self.currency
+                }
             }
         }
 
@@ -70,6 +82,21 @@ class _CoinMarketCapApi(_CoinApi, _CoinApiData):
         data = response["data"]
 
         return data[self.symbol][0]["quote"][self.currency]["price"]
+
+    def get_price_all(self):
+
+        response = _fetch(self.api_endpoints["get_price_all"]["url"],
+                          self.api_headers,
+                          self.api_endpoints["get_price_all"]["params"]).json()
+
+        data = response["data"]
+
+        prices = {}
+
+        for symbol in symbols:
+            prices[symbol] = data[symbol][0]["quote"][self.currency]["price"]
+
+        return prices
 
 
 def _fetch(api_url, api_headers, api_parameters):
