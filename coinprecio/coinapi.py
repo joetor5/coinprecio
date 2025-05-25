@@ -3,7 +3,7 @@
 
 import os
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import requests
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 from .exceptions import *
@@ -23,8 +23,8 @@ class _CoinApi(ABC):
 
 @dataclass
 class _CoinApiData:
-    api_url: str
-    api_key: str
+    domain: str
+    api_key: str = field(repr=False)
     symbol: str
     currency: str
 
@@ -42,7 +42,7 @@ class _CoinApiData:
 class _CoinMarketCapApi(_CoinApi, _CoinApiData):
     def __init__(self, api_key: str, symbol: str, currency: str):
 
-        _CoinApiData.__init__(self, "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest",
+        _CoinApiData.__init__(self, "https://pro-api.coinmarketcap.com",
                               api_key, symbol, currency)
 
         self.api_headers = {
@@ -50,17 +50,22 @@ class _CoinMarketCapApi(_CoinApi, _CoinApiData):
             "X-CMC_PRO_API_KEY": self.api_key,
         }
 
-        self.api_parameters = {
-            "symbol": self.symbol,
-            "convert": self.currency
+        self.api_endpoints = {
+            "get_price": {
+                    "url": f"{self.domain}/v2/cryptocurrency/quotes/latest",
+                    "params": {
+                        "symbol": self.symbol,
+                        "convert": self.currency
+                    }
+            }
         }
 
 
     def get_price(self):
 
-        response = _fetch(self.api_url,
+        response = _fetch(self.api_endpoints["get_price"]["url"],
                           self.api_headers,
-                          self.api_parameters).json()
+                          self.api_endpoints["get_price"]["params"]).json()
 
         data = response["data"]
 
