@@ -7,6 +7,7 @@ from coinprecio import api
 from coinprecio.coinapi import _CoinApi, _CoinApiData
 from coinprecio.exceptions import *
 from coinprecio.symbols import symbols
+from coinprecio.currencies import currencies
 
 
 class TestCoinApi(unittest.TestCase):
@@ -55,7 +56,15 @@ class TestCoinApi(unittest.TestCase):
 
         prices_greater_than_zero = {price > 0 for price in prices.values()}
         self.assertEqual(prices_greater_than_zero, {True})
-    
+
+    def test_currencies(self):
+        for currency in currencies:
+            capi = api(api_key=self.api_key, currency=currency)
+            price = capi.get_price()
+            self.assertEqual(capi.currency, currency)
+            self.assertIsInstance(price, float)
+            self.assertGreater(price, 0)
+
     def tearDown(self):
         pass
 
