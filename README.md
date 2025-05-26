@@ -29,10 +29,15 @@ pip install coinprecio
 ```
 from coinprecio import api
 
-api_key = "1234567890"
+api_key = "YOUR_API_KEY"
 
 coinapi = api(api_key)
-price = coinapi.get_price()
+
+# get price for the initialized symbol
+btc_price = coinapi.get_price()
+
+# get price dict for all supported symbols
+prices = coinapi.get_price_all()
 ```
 
 Note: *api_key* should be associated with the respective backend/API service.
