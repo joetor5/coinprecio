@@ -4,7 +4,5 @@
 currencies = [
     "USD",
     "EUR",
-    "CAD",
-    "MXN",
-    "PHP"
+    "JPY",
 ]

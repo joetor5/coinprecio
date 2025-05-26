@@ -3,7 +3,6 @@
 
 symbols = [
     "BTC",
-    "ETH",
     "BCH",
     "LTC"
 ]
