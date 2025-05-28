@@ -5,4 +5,5 @@ currencies = [
     "USD",
     "EUR",
     "JPY",
+    "GBP"
 ]

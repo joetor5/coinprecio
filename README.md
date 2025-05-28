@@ -49,6 +49,8 @@ Note: *api_key* should be associated with the respective backend/API service.
 ## <div id="supported-symbols">Supported Symbols</div>
 
 * BTC
+* ETH
+* SOL
 * BCH
 * LTC
 
@@ -57,6 +59,7 @@ Note: *api_key* should be associated with the respective backend/API service.
 * USD
 * EUR
 * JPY
+* GBP
 
 ## <div id="license">License</div>
 
