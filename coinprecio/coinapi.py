@@ -91,12 +91,8 @@ class _CoinMarketCapApi(_CoinApi, _CoinApiData):
 
         data = response["data"]
 
-        prices = {}
-
-        for symbol in symbols:
-            prices[symbol] = data[symbol][0]["quote"][self.currency]["price"]
-
-        return prices
+        return {symbol: data[symbol][0]["quote"][self.currency]["price"]
+                for symbol in symbols}
 
 
 def _fetch(api_url, api_headers, api_parameters):
