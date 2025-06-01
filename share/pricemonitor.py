@@ -13,8 +13,8 @@ def main(args):
     influx_token = os.getenv("INFLUXDB3_AUTH_TOKEN")
 
     coin_api = api(api_key=coin_api_key)
-    influx_client = InfluxDBClient3(token=influx_token, 
-                                    host=f"{args.host}:8181",
+    influx_client = InfluxDBClient3(token=influx_token,
+                                    host=f"http://{args.host}:{args.port}",
                                     database=args.db)
     
     coin_prices = coin_api.get_price_all()
@@ -30,6 +30,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--db", type=str, default="coinprice")
     parser.add_argument("--host", type=str, default="localhost")
+    parser.add_argument("--port", type=int, default=8181)
 
     args = parser.parse_args()
     
